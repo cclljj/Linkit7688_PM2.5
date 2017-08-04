@@ -15,13 +15,12 @@ class sensor(Process):
 		self.u.setMode(8, mraa.UART_PARITY_NONE, 1)
 		self.u.setFlowcontrol(False, False)
 
-		self.cfpm1_0_avg = move_avge.avge(60)		
-		self.cfpm2_5_avg = move_avge.avge(60)		
-		self.cfpm10_avg = move_avge.avge(60)		
-		self.pm1_0_avg = move_avge.avge(10)		
-		self.pm2_5_avg = move_avge.avge(10)		
-		self.pm10_avg = move_avge.avge(10)		
-
+		self.cfpm1_0_avg = move_avge.move_avg(60)		
+		self.cfpm2_5_avg = move_avge.move_avg(60)		
+		self.cfpm10_avg = move_avge.move_avg(60)		
+		self.pm1_0_avg = move_avge.move_avg(10)		
+		self.pm2_5_avg = move_avge.move_avg(10)		
+		self.pm10_avg = move_avge.move_avg(10)		
 
 	def data_log(self, dstr):
 		bytedata = bytearray(dstr)
