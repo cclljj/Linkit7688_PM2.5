@@ -5,16 +5,13 @@ from multiprocessing import Queue,Process
 
 import move_avge
 
-NUM_INCOME_BYTE = 32
-CHAR_PRELIM     = 0x42
-NUM_DATA_BYTE   = 30
-CHECK_BYTE      = 30
-CF_PM1_BYTE     = 4
-CF_PM25_BYTE    = 6
-CF_PM10_BYTE    = 8
-PM1_BYTE        = 10
-PM25_BYTE       = 12
-PM10_BYTE       = 14
+NUM_INCOME_BYTE = 16
+CHAR_PRELIM     = 0x40
+NUM_DATA_BYTE   = 14
+CHECK_BYTE      = 14
+PM1_BYTE        = -1
+PM25_BYTE       = 6
+PM10_BYTE       = 8
 
 class sensor(Process):
 	def __init__(self, q):
@@ -26,9 +23,6 @@ class sensor(Process):
 		self.u.setMode(8, mraa.UART_PARITY_NONE, 1)
 		self.u.setFlowcontrol(False, False)
 
-		self.cfpm1_0_avg = move_avge.move_avg(1)		
-		self.cfpm2_5_avg = move_avge.move_avg(1)		
-		self.cfpm10_avg = move_avge.move_avg(1)		
 		self.pm1_0_avg = move_avge.move_avg(1)		
 		self.pm2_5_avg = move_avge.move_avg(1)		
 		self.pm10_avg = move_avge.move_avg(1)		
@@ -36,16 +30,10 @@ class sensor(Process):
 	def data_log(self, dstr):
 		bytedata = bytearray(dstr)
 		if self.checksum(dstr) is True:
-			CF_PM1_0 = bytedata[CF_PM1_BYTE]*256 + bytedata[CF_PM1_BYTE]
-			CF_PM2_5 = bytedata[CF_PM25_BYTE]*256 + bytedata[CF_PM25_BYTE]
-			CF_PM10 = bytedata[CF_PM10_BYTE]*256 + bytedata[CF_PM10_BYTE]
-			PM1_0 = bytedata[PM1_BYTE]*256 + bytedata[PM1_BYTE+1]
+			PM1_0 = -1
 			PM2_5 = bytedata[PM25_BYTE]*256 + bytedata[PM25_BYTE+1]
 			PM10 = bytedata[PM10_BYTE]*256 + bytedata[PM10_BYTE+1]
 	
-			self.cfpm1_0_avg.add(CF_PM1_0)
-			self.cfpm2_5_avg.add(CF_PM2_5)
-			self.cfpm10_avg.add(CF_PM10)
 			self.pm1_0_avg.add(PM1_0)
 			self.pm2_5_avg.add(PM2_5)
 			self.pm10_avg.add(PM10)
@@ -66,16 +54,11 @@ class sensor(Process):
 
 
 	def get_data(self):
-		CF_PM1_0 = self.cfpm1_0_avg.get()
-		CF_PM2_5 = self.cfpm2_5_avg.get()
-		CF_PM10 = self.cfpm10_avg.get()
 		PM1_0 = self.pm1_0_avg.get()
 		PM2_5 = self.pm2_5_avg.get()
 		PM10 = self.pm10_avg.get()
 
-		ret = {	'CFPM1.0': CF_PM1_0,
-			'CFPM2.5': CF_PM2_5,
-			'CFPM10': CF_PM10,
+		ret = {	
 			'PM1.0': PM1_0,
 			'PM2.5': PM2_5,
 			'PM10': PM10

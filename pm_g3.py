@@ -5,10 +5,10 @@ from multiprocessing import Queue,Process
 
 import move_avge
 
-NUM_INCOME_BYTE = 32
+NUM_INCOME_BYTE = 24
 CHAR_PRELIM     = 0x42
-NUM_DATA_BYTE   = 30
-CHECK_BYTE      = 30
+NUM_DATA_BYTE   = 22
+CHECK_BYTE      = 22
 CF_PM1_BYTE     = 4
 CF_PM25_BYTE    = 6
 CF_PM10_BYTE    = 8
